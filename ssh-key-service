@@ -1,0 +1,47 @@
+#!/bin/bash
+#
+# created by jacopo@autistici.org (antipatico)
+# if you have problems with this script is because I'm trash,
+# so please don't bother me, thanks.
+# 
+# copyleft (c) 2015
+
+SSH_KEYS_DIRS=("$HOME/.ssh") # An array containing a list of directory where you have your private keys
+#SSH_KEYS_DIRS=("$HOME/.ssh" "/media/$USER/myprivateusb/.ssh" "/var/secret/ssh" "/path/to/your/keys")
+
+## DONT EDIT THIS FILE UNDER THIS LINE ##
+
+ssh-agent() {
+    /usr/bin/ssh-agent $@
+}
+
+ssh-keygen() {
+    /usr/bin/ssh-keygen $@
+}
+
+ssh-add() {
+    /usr/bin/ssh-add $@
+}
+
+ssh-agent | sed '$ d' > "$HOME/.cache/ssh-agent-session"
+source "$HOME/.cache/ssh-agent-session"
+
+for tmp_path in ${SSH_KEYS_DIRS[@]}; do
+    for tmp_file in `find $tmp_path -type f`; do
+        if ssh-keygen -yf "$tmp_file" &> /dev/null; then
+            ssh-add "$tmp_file"
+        fi
+    done
+done
+
+_close() {
+    /usr/bin/pkill -u $USER -9 ssh-agent
+    rm -rf "$HOME/.cache/ssh-agent-session"
+    exit 0
+}
+
+trap _close SIGHUP SIGINT SIGQUIT SIGTERM
+
+while true; do
+    sleep 1
+done
