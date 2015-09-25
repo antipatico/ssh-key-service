@@ -22,7 +22,7 @@ fi
 
 You are done :)
 
-## Advanced
+## Advanced Setup
 If you want to load keys from other path then "$HOME/.ssh", just edit the array **SSH_KEYS_DIRS** and add to it as many path as you like E.G. :
 
 ```bash
